@@ -46,21 +46,23 @@ vet: ## Verifies `go vet` passes
 .PHONY: test
 test: ## Runs all tests
 	@echo "+ $@"
-	$(GO) test -v -tags "$(BUILDTAGS) cgo" $(shell $(GO) list ./... | grep -v vendor | grep -v cross)
+	@$(GO) test -v -tags "$(BUILDTAGS) cgo" $(shell $(GO) list ./... | grep -v vendor | grep -v cross)
 
 $(NAME): $(wildcard *.go) $(wildcard */*.go) VERSION.txt
 	@echo "+ $@"
-	$(GO) build -tags "$(BUILDTAGS)" ${GO_LDFLAGS} -o $(NAME) .
+	@$(GO) build -tags "$(BUILDTAGS)" ${GO_LDFLAGS} -o $(NAME) .
 
 .PHONY: build
 build: $(NAME) ## Builds a dynamic executable or package
 
 .PHONY: run
 run: ## Run main
+	@echo "+ $@"
 	$(GO) run main.go
 
 .PHONY: dev
 dev: ## Watch source files and run tests and main on save
+	@echo "+ $@"
 	@ag -l | entr -scrd 'make fmt vet lint test run'
 
 .PHONY: install

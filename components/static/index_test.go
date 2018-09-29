@@ -2,6 +2,7 @@ package static
 
 import (
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -13,7 +14,7 @@ func TestIndex(t *testing.T) {
 		t.Error("Expected 200 but got", respRec.Code)
 	}
 	body := respRec.Body.String()
-	if body != "Hello world!" {
+	if !strings.Contains(body, "Hello world!") {
 		t.Error("Expected greeting but got", body)
 	}
 }
