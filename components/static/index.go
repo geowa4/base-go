@@ -33,10 +33,3 @@ func index(w http.ResponseWriter, r *http.Request) {
 		Greeting: "Hello world!",
 	})
 }
-
-// NewStaticMux Does stuff
-func NewStaticMux() *http.ServeMux {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", index)
-	return mux
-}
