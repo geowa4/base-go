@@ -10,6 +10,7 @@ import (
 	"github.com/rs/zerolog/hlog"
 	"github.com/rs/zerolog/log"
 
+	"github.com/geowa4/base-go/components/api"
 	"github.com/geowa4/base-go/components/static"
 )
 
@@ -67,6 +68,7 @@ func main() {
 	configureGlobalLogging(os.Getenv("GOLOGLEVEL"))
 	hlogChain := makeAccessLogChain(log.Logger)
 	rootMux := http.NewServeMux()
+	rootMux.Handle("/graphql", hlogChain.Then(api.NewGraphQLHandler()))
 	rootMux.Handle("/", hlogChain.Then(static.NewStaticMux()))
 	startServer(rootMux)
 }
