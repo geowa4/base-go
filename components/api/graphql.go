@@ -2,6 +2,8 @@ package api
 
 import (
 	"context"
+	"errors"
+	"expvar"
 	"net/http"
 
 	"github.com/graphql-go/graphql"
@@ -9,6 +11,15 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+var (
+	countMeLoaded    = expvar.NewInt("NumLoadedUsers")
+	stringLastLoaded = expvar.NewString("LastLoadedUser")
+)
+
+type user struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
 type graphQLKey string
 
 func makeMeField() *graphql.Field {
@@ -28,7 +39,13 @@ func makeMeField() *graphql.Field {
 	return &graphql.Field{
 		Type: userType,
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-			return p.Context.Value(graphQLKey("currentUser")), nil
+			user, ok := p.Context.Value(graphQLKey("currentUser")).(user)
+			if !ok {
+				return nil, errors.New("invalid type for 'me'")
+			}
+			countMeLoaded.Add(1)
+			stringLastLoaded.Set(user.Name)
+			return user, nil
 		},
 	}
 }
@@ -53,10 +70,10 @@ func NewGraphQLHandler() http.Handler {
 		Schema: &schema,
 	})
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user := struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		}{1, "cool user"}
+		user := user{
+			ID:   1,
+			Name: "cool user",
+		}
 		ctx := context.WithValue(r.Context(), graphQLKey("currentUser"), user)
 		graphQLHandler.ContextHandler(ctx, w, r)
 	})
