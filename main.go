@@ -69,7 +69,7 @@ func main() {
 	configureGlobalLogging(os.Getenv("GOLOGLEVEL"))
 	hlogChain := makeAccessLogChain(log.Logger)
 	rootMux := http.NewServeMux()
-	rootMux.Handle("/debug/vars", expvar.Handler())
+	rootMux.Handle("/debug/vars", hlogChain.Then(expvar.Handler()))
 	rootMux.Handle("/graphql", hlogChain.Then(api.NewGraphQLHandler()))
 	rootMux.Handle("/", hlogChain.Then(static.NewStaticMux()))
 	startServer(rootMux)
