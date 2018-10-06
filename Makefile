@@ -31,17 +31,18 @@ clean: ## Cleanup any build binaries or packages
 .PHONY: fmt
 fmt: ## Verifies all files have been `gofmt`ed
 	@echo "+ $@"
-	@gofmt -s -l . | grep -v vendor | grep -v cross | tee /dev/stderr
+	@gofmt -s -l main.go main_test.go components
 
 .PHONY: lint
 lint: ## Verifies `golint` passes
 	@echo "+ $@"
-	@golint ./... | grep -v vendor | grep -v cross | tee /dev/stderr
+	@golint main.go main_test.go
+	@golint components/...
 
 .PHONY: vet
 vet: ## Verifies `go vet` passes
 	@echo "+ $@"
-	@$(GO) vet $(shell $(GO) list ./... | grep -v vendor | grep -v cross) | tee /dev/stderr
+	@$(GO) vet $(shell $(GO) list ./... | grep -v vendor | grep -v cross)
 
 .PHONY: test
 test: ## Runs all tests
