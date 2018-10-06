@@ -1,4 +1,4 @@
-package static
+package webui
 
 import (
 	"html/template"
