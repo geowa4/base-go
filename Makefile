@@ -31,12 +31,12 @@ clean: ## Cleanup any build binaries or packages
 .PHONY: fmt
 fmt: ## Verifies all files have been `gofmt`ed
 	@echo "+ $@"
-	@gofmt -s -l main.go main_test.go components
+	@gofmt -s -l main.go components
 
 .PHONY: lint
 lint: ## Verifies `golint` passes
 	@echo "+ $@"
-	@golint main.go main_test.go
+	@golint main.go
 	@golint components/...
 
 .PHONY: vet
