@@ -49,12 +49,19 @@ test: ## Runs all tests
 	@echo "+ $@"
 	@$(GO) test -v -tags "$(BUILDTAGS) cgo" $(shell $(GO) list ./... | grep -v vendor | grep -v cross)
 
+components/webui/mbeds/embedded-generated.go: $(wildcard components/webui/embeds/*)
+	@$(GO) generate components/webui/embeds/embedded.go
+
 $(NAME): $(wildcard *.go) $(wildcard */*.go) VERSION.txt
 	@echo "+ $@"
 	@$(GO) build -tags "$(BUILDTAGS)" ${GO_LDFLAGS} -o $(NAME) .
 
+.PHONY: embeds
+embeds: ## Embeds static assets into Go source
+	@$(GO) generate ./...
+
 .PHONY: build
-build: $(NAME) ## Builds a dynamic executable or package
+build: embeds $(NAME) ## Builds a dynamic executable or package
 
 .PHONY: run
 run: ## Run main
