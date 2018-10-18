@@ -9,8 +9,8 @@ ifneq ($(GITUNTRACKEDCHANGES),)
 endif
 GO := go
 SED := $(shell which gsed || which sed)
-MD5 := $(shell which gmd5sum || which sed)
-SHA256 := $(shell which gsha256sum || which sed)
+MD5 := $(shell which gmd5sum || which md5sum)
+SHA256 := $(shell which gsha256sum || which sha256sum)
 GOOSARCHES = linux/amd64 darwin/amd64
 CTIMEVAR=-X $(PKG)/version.GITCOMMIT=$(GITCOMMIT) -X $(PKG)/version.VERSION=$(VERSION)
 GO_LDFLAGS=-ldflags "-w $(CTIMEVAR)"
