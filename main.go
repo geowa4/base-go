@@ -48,7 +48,7 @@ func main() {
 		log.Fatal().Err(err).Msg("Failed to connect to the database.")
 	}
 	defer db.Close()
-	log.Info().Msg("Connected to the database.")
+	log.Info().Msg("Configured connection to the database.")
 	createSchemaMigrationsTable(db)
 	migrations.MigrateDatabase(db)
 	cancelWebContext := server.NewWebServers(log.Logger)
