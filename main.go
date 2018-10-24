@@ -2,57 +2,47 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"os"
 	"os/signal"
 
+	"github.com/geowa4/base-go/components/config"
 	"github.com/geowa4/base-go/components/migrations"
 	"github.com/geowa4/base-go/components/server"
 	_ "github.com/lib/pq"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
 )
 
-func configureGlobalLogging(level string) {
+//serviceName is used as a prefix to environment variables and put in logs for easy filtering.
+const serviceName = "base_go"
+
+func configureGlobalLogging() zerolog.Logger {
+	level := viper.GetString("log_level")
 	zerolog.TimeFieldFormat = ""
 	if logLevel, err := zerolog.ParseLevel(level); err != nil {
 		zerolog.SetGlobalLevel(logLevel)
 	} else {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	}
-}
-
-func createSchemaMigrationsTable(db *sql.DB) {
-	const createSchemaMigrationsStatement = `
-	CREATE TABLE IF NOT EXISTS schema_migrations (
-		version smallint,
-		created_at timestamp without time zone default (now() at time zone 'utc'),
-
-		PRIMARY KEY (version)
-	)
-	`
-	_, err := db.Exec(createSchemaMigrationsStatement)
-	if err != nil {
-		log.Fatal().Err(err).Msg("Error creating schema migrations table.")
-	}
+	return log.With().Str("service", serviceName).Logger()
 }
 
 func main() {
-	configureGlobalLogging(os.Getenv("GOLOGLEVEL"))
-	log.Info().Msg("Initializing application.")
+	config.ReadConfig(serviceName)
+	logger := configureGlobalLogging()
+	logger.Info().Msg("Initializing application.")
 	sigint := make(chan os.Signal, 1)
 	signal.Notify(sigint, os.Interrupt)
-	connStr := "user=postgres dbname=postgres sslmode=disable"
-	db, err := sql.Open("postgres", connStr)
+	db, err := sql.Open("postgres", config.DatabaseConnectionString())
 	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to connect to the database.")
+		logger.Fatal().Err(err).Msg("Failed to connect to the database.")
 	}
 	defer db.Close()
-	log.Info().Msg("Configured connection to the database.")
-	createSchemaMigrationsTable(db)
-	migrations.MigrateDatabase(db)
-	cancelWebContext := server.NewWebServers(log.Logger)
+	logger.Info().Msg("Configured connection to the database.")
+	migrations.MigrateDatabase(logger, db)
+	cancelWebContext := server.NewWebServers(logger)
 	defer cancelWebContext()
-	log.Info().Msg("Application ready.")
-	log.Info().Msg(fmt.Sprintf("Received signal %s; shutting down.", <-sigint))
+	logger.Info().Msg("Application ready.")
+	logger.Info().Msgf("Received signal %s; shutting down.", <-sigint)
 }

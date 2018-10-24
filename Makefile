@@ -8,6 +8,9 @@ ifneq ($(GITUNTRACKEDCHANGES),)
 	GITCOMMIT := $(GITCOMMIT)-dirty
 endif
 GO := go
+GO_VERSION := $(shell grep golang .tool-versions | awk '{print $$2}')
+DOCKER := docker
+DOCKERUSER := $(shell whoami)
 SED := $(shell which gsed || which sed)
 MD5 := $(shell which gmd5sum || which md5sum)
 SHA256 := $(shell which gsha256sum || which sha256sum)
@@ -27,6 +30,13 @@ clean: ## Cleanup any build binaries or packages
 	@echo "+ $@"
 	$(RM) $(NAME)
 	$(RM) -r $(BUILDDIR)
+	-@$(DOCKER) rm -f $(NAME)-postgres
+
+.PHONY: deps
+deps: ## Installs all dependencies
+	go get -d -v ./...
+	go get -u golang.org/x/lint/golint
+	go get -u github.com/shuLhan/go-bindata/...
 
 .PHONY: fmt
 fmt: ## Verifies all files have been `gofmt`ed
@@ -71,6 +81,7 @@ run: ## Run main
 .PHONY: dev
 dev: ## Watch source files and run tests and main on save
 	@echo "+ $@"
+	@$(DOCKER) run --name $(NAME)-postgres -p 5432:5432 -d postgres:10
 	@ag -l | entr -scrd 'make fmt vet lint test run'
 
 .PHONY: install
@@ -79,7 +90,7 @@ install: ## Installs the executable or package
 	$(GO) install -a -tags "$(BUILDTAGS)" ${GO_LDFLAGS} .
 
 define buildrelease
-GOOS=$(1) GOARCH=$(2) CGO_ENABLED=1 $(GO) build \
+GOOS=$(1) GOARCH=$(2) CGO_ENABLED=0 $(GO) build \
 	 -o $(BUILDDIR)/$(NAME)-$(1)-$(2) \
 	 -a -tags "$(BUILDTAGS) static_build netgo" \
 	 -installsuffix netgo ${GO_LDFLAGS_STATIC} .;
@@ -87,10 +98,16 @@ $(MD5) $(BUILDDIR)/$(NAME)-$(1)-$(2) > $(BUILDDIR)/$(NAME)-$(1)-$(2).md5;
 $(SHA256) $(BUILDDIR)/$(NAME)-$(1)-$(2) > $(BUILDDIR)/$(NAME)-$(1)-$(2).sha256;
 endef
 
+.PHONY: ci
+ci: ## Runs test suite in Docker build
+	docker build --pull -f ci.dockerfile --build-arg GO_VERSION=$(GO_VERSION) .
+
 .PHONY: release
 release: *.go VERSION.txt ## Builds the cross-compiled binaries, naming them in such a way for release (eg. binary-GOOS-GOARCH)
 	@echo "+ $@"
 	$(foreach GOOSARCH,$(GOOSARCHES), $(call buildrelease,$(subst /,,$(dir $(GOOSARCH))),$(notdir $(GOOSARCH))))
+	@$(DOCKER) build --pull -t $(DOCKERUSER)/$(NAME):$(GITCOMMIT) --build-arg SERVICE_NAME=$(NAME) $(BUILDDIR)
+	@$(DOCKER) tag $(DOCKERUSER)/$(NAME):$(GITCOMMIT) $(DOCKERUSER)/$(NAME):$(VERSION)
 
 .PHONY: bump-version
 BUMP := patch
@@ -108,5 +125,5 @@ bump-version: ## Bump the version in the version file. Set BUMP to [ patch | maj
 .PHONY: tag
 tag: ## Create a new git tag to prepare to build a release
 	git tag -sa $(VERSION) -m "$(VERSION)"
-	@echo "Run git push origin $(VERSION) to push your new tag to GitHub and trigger a travis build."
+	@echo "Run git push origin $(VERSION) to push your new tag to GitHub and trigger a build."
 

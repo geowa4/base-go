@@ -4,14 +4,31 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
 //go:generate go-bindata -pkg $GOPACKAGE -o embeds.go sql/...
 
+func createSchemaMigrationsTable(db *sql.DB) {
+	const createSchemaMigrationsStatement = `
+	CREATE TABLE IF NOT EXISTS schema_migrations (
+		version smallint,
+		created_at timestamp without time zone default (now() at time zone 'utc'),
+
+		PRIMARY KEY (version)
+	)
+	`
+	_, err := db.Exec(createSchemaMigrationsStatement)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Error creating schema migrations table.")
+	}
+}
+
 //MigrateDatabase migrates the database to the latest version
 //with the embedded scripts.
-func MigrateDatabase(db *sql.DB) {
+func MigrateDatabase(log zerolog.Logger, db *sql.DB) {
+	createSchemaMigrationsTable(db)
 	row := db.QueryRow("SELECT version FROM schema_migrations ORDER BY version DESC LIMIT 1")
 	var version int
 	err := row.Scan(&version)
