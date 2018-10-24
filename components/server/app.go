@@ -4,17 +4,17 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/geowa4/base-go/components/api"
 	"github.com/geowa4/base-go/components/webui"
 	"github.com/justinas/alice"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
 )
 
 func getAppPort() uint16 {
-	intPort, err := strconv.ParseUint(os.Getenv("GO_APP_PORT"), 10, 16)
+	intPort, err := strconv.ParseUint(viper.GetString("APP_PORT"), 10, 16)
 	if err != nil {
 		return 8000
 	}

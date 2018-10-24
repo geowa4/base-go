@@ -5,14 +5,15 @@ import (
 	"expvar"
 	"fmt"
 	"net/http"
-	"os"
 	"strconv"
+
+	"github.com/spf13/viper"
 
 	"github.com/justinas/alice"
 )
 
 func getMetricsPort() uint16 {
-	intPort, err := strconv.ParseUint(os.Getenv("GO_METRICS_PORT"), 10, 16)
+	intPort, err := strconv.ParseUint(viper.GetString("METRICS_PORT"), 10, 16)
 	if err != nil {
 		return getAppPort() + 1
 	}
