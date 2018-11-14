@@ -3,6 +3,7 @@ package webui
 import (
 	"html/template"
 	"net/http"
+	"strings"
 
 	"github.com/rs/zerolog/log"
 )
@@ -19,7 +20,14 @@ func index(w http.ResponseWriter, r *http.Request) {
 		log.Error().Err(err).Msg("Error retrieving index.html contents.")
 	}
 	t := template.Must(template.New("index").Parse(string(contents)))
-	t.Execute(w, indexData{
+	var b strings.Builder
+	err = t.Execute(&b, indexData{
 		Greeting: "Hello world!",
 	})
+	if err == nil {
+		w.Write([]byte(b.String()))
+	} else {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Error().Err(err).Msg("Error rendering index template.")
+	}
 }
