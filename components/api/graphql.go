@@ -6,8 +6,10 @@ import (
 	"expvar"
 	"net/http"
 
+	"github.com/geowa4/base-go/components/api/foos"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
+	"github.com/jmoiron/sqlx"
 	"github.com/rs/zerolog/log"
 )
 
@@ -51,12 +53,13 @@ func makeMeField() *graphql.Field {
 }
 
 // NewGraphQLHandler creates a new HTTP handler for GraphQL.
-func NewGraphQLHandler() http.Handler {
+func NewGraphQLHandler(db *sqlx.DB) http.Handler {
 	queryType := graphql.NewObject(
 		graphql.ObjectConfig{
 			Name: "Query",
 			Fields: graphql.Fields{
-				"me": makeMeField(),
+				"me":   makeMeField(),
+				"foos": foos.NewFooField(db),
 			},
 		},
 	)
