@@ -57,7 +57,7 @@ vet: ## Verifies `go vet` passes
 .PHONY: test
 test: ## Runs all tests
 	@echo "+ $@"
-	@$(GO) test -v -tags "$(BUILDTAGS) cgo" $(shell $(GO) list ./... | grep -v vendor | grep -v cross)
+	@$(GO) test -cover -v -tags "$(BUILDTAGS) cgo" $(shell $(GO) list ./... | grep -v vendor | grep -v cross)
 
 components/webui/mbeds/embedded-generated.go: $(wildcard components/webui/embeds/*)
 	@$(GO) generate components/webui/embeds/embedded.go

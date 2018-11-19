@@ -5,6 +5,8 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/jmoiron/sqlx"
+
 	"github.com/geowa4/base-go/components/config"
 	"github.com/geowa4/base-go/components/migrations"
 	"github.com/geowa4/base-go/components/server"
@@ -41,7 +43,7 @@ func main() {
 	defer db.Close()
 	logger.Info().Msg("Configured connection to the database.")
 	migrations.MigrateDatabase(logger, db)
-	cancelWebContext := server.NewWebServers(logger)
+	cancelWebContext := server.NewWebServers(logger, sqlx.NewDb(db, "postgres"))
 	defer cancelWebContext()
 	logger.Info().Msg("Application ready.")
 	logger.Info().Msgf("Received signal %s; shutting down.", <-sigint)

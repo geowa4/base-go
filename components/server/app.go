@@ -8,6 +8,7 @@ import (
 
 	"github.com/geowa4/base-go/components/api"
 	"github.com/geowa4/base-go/components/webui"
+	"github.com/jmoiron/sqlx"
 	"github.com/justinas/alice"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
@@ -21,16 +22,16 @@ func getAppPort() uint16 {
 	return uint16(intPort)
 }
 
-func newAppMux(accessLogChain alice.Chain) *http.ServeMux {
+func newAppMux(accessLogChain alice.Chain, db *sqlx.DB) *http.ServeMux {
 	hlogChain := newAccessLogChain(log.Logger)
 	mux := http.NewServeMux()
-	mux.Handle("/graphql", hlogChain.Then(api.NewGraphQLHandler()))
+	mux.Handle("/graphql", hlogChain.Then(api.NewGraphQLHandler(db)))
 	mux.Handle("/", hlogChain.Then(webui.NewStaticMux()))
 	return mux
 }
 
 func startAppServer(ctx context.Context, config *webServerConfig) {
 	appAddr := fmt.Sprintf(":%d", getAppPort())
-	appMux := newAppMux(config.accessLogChain)
+	appMux := newAppMux(config.accessLogChain, config.db)
 	startServer(ctx, appAddr, appMux, config.idleAppConnectionsClosed)
 }

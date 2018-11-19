@@ -109,7 +109,7 @@ func bindataHtmlIndexhtml() (*asset, error) {
 		size: 291,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1539472926, 0),
+		modTime: time.Unix(1542168745, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}

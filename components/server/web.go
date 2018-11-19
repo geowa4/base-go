@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/justinas/alice"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/hlog"
@@ -62,6 +63,7 @@ type webServerConfig struct {
 	idleMetricsConnectionsClosed chan bool
 	accessLogChain               alice.Chain
 	cancelContextFunc            func()
+	db                           *sqlx.DB
 }
 
 func (config *webServerConfig) Cancel() {
@@ -77,11 +79,12 @@ func (config *webServerConfig) Cancel() {
 // returns a function to cancel the web contexts,
 // resulting in their graceful shutdown.
 // The app server comprises the ui and api.
-func NewWebServers(log zerolog.Logger) func() {
+func NewWebServers(log zerolog.Logger, db *sqlx.DB) func() {
 	webConfig := &webServerConfig{
 		idleAppConnectionsClosed:     make(chan bool, 1),
 		idleMetricsConnectionsClosed: make(chan bool, 1),
 		accessLogChain:               newAccessLogChain(log),
+		db:                           db,
 	}
 	webCtx, cancelWeb := context.WithCancel(context.Background())
 	webConfig.cancelContextFunc = cancelWeb
