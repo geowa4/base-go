@@ -4,11 +4,12 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/geowa4/base-go/components/migrations/internal/assets"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
-//go:generate go-bindata -pkg $GOPACKAGE -o embeds.go sql/...
+//go:generate go-bindata -pkg assets -o internal/assets/embeds.go sql/...
 
 func createSchemaMigrationsTable(db *sql.DB) {
 	const createSchemaMigrationsStatement = `
@@ -40,7 +41,7 @@ func MigrateDatabase(log zerolog.Logger, db *sql.DB) {
 	log.Info().Msg(fmt.Sprintf("Current database version: %d", version))
 	for nextVersion := version + 1; true; nextVersion++ {
 		log.Info().Msg(fmt.Sprintf("Attempting to migrate database to version %d using sql/%04d.up.sql", nextVersion, nextVersion))
-		migrationScript, err := Asset(fmt.Sprintf("sql/%04d.up.sql", nextVersion))
+		migrationScript, err := assets.Asset(fmt.Sprintf("sql/%04d.up.sql", nextVersion))
 		if err != nil {
 			log.Info().Msg(fmt.Sprintf("No database migration found for version %d.", nextVersion))
 			break

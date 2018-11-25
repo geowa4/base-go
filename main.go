@@ -40,7 +40,12 @@ func main() {
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Failed to connect to the database.")
 	}
-	defer db.Close()
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			log.Error().Err(err).Msg("Error closing database.")
+		}
+	}()
 	logger.Info().Msg("Configured connection to the database.")
 	migrations.MigrateDatabase(logger, db)
 	cancelWebContext := server.NewWebServers(logger, sqlx.NewDb(db, "postgres"))

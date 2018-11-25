@@ -1,6 +1,10 @@
 package foos
 
-import "database/sql"
+import (
+	"database/sql"
+
+	"github.com/rs/zerolog/log"
+)
 
 type fooDB interface {
 	Select(dest interface{}, query string, args ...interface{}) error
@@ -85,7 +89,12 @@ func (fda *fooDataAccessor) loadOneWithBars(fooID int) ([]*foo, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		err := rows.Close()
+		if err != nil {
+			log.Error().Err(err).Msg("Error closing rows when loading single foo with bars.")
+		}
+	}()
 	return fda.handleRowsWithBars(rows, err)
 }
 
@@ -95,7 +104,12 @@ func (fda *fooDataAccessor) loadAllWithBars() ([]*foo, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		err := rows.Close()
+		if err != nil {
+			log.Error().Err(err).Msg("Error closing rows when loading foos with bars.")
+		}
+	}()
 	return fda.handleRowsWithBars(rows, err)
 }
 
