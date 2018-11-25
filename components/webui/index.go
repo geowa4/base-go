@@ -5,17 +5,18 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/geowa4/base-go/components/webui/internal/assets"
 	"github.com/rs/zerolog/log"
 )
 
-//go:generate go-bindata -pkg $GOPACKAGE -o embeds.go html/...
+//go:generate go-bindata -pkg assets -o internal/assets/embeds.go html/...
 
 type indexData struct {
 	Greeting string
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	contents, err := Asset("html/index.html")
+	contents, err := assets.Asset("html/index.html")
 	if err != nil {
 		log.Error().Err(err).Msg("Error retrieving index.html contents.")
 	}
@@ -25,7 +26,10 @@ func index(w http.ResponseWriter, r *http.Request) {
 		Greeting: "Hello world!",
 	})
 	if err == nil {
-		w.Write([]byte(b.String()))
+		_, err := w.Write([]byte(b.String()))
+		if err != nil {
+			log.Error().Err(err).Msg("Error writing index.html to response.")
+		}
 	} else {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Error().Err(err).Msg("Error rendering index template.")

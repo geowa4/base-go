@@ -19,7 +19,7 @@ CTIMEVAR=-X $(PKG)/version.GITCOMMIT=$(GITCOMMIT) -X $(PKG)/version.VERSION=$(VE
 GO_LDFLAGS=-ldflags "-w $(CTIMEVAR)"
 GO_LDFLAGS_STATIC=-ldflags "-w $(CTIMEVAR) -extldflags -static"
 
-all: clean fmt vet lint test build install ## Runs a clean, fmt, vet, lint, test, build, and install
+all: clean fmt test build install ## Runs a clean, fmt, test, build, and install
 
 .PHONY: help
 help:
@@ -34,33 +34,23 @@ clean: ## Cleanup any build binaries or packages
 
 .PHONY: deps
 deps: ## Installs all dependencies
-	go get -d -v ./...
+	go get -d -v ./..
 	go get -u golang.org/x/lint/golint
 	go get -u github.com/shuLhan/go-bindata/...
+	go get -u github.com/kisielk/errcheck
 
 .PHONY: fmt
 fmt: ## Verifies all files have been `gofmt`ed
 	@echo "+ $@"
-	@gofmt -s -l main.go components
-
-.PHONY: lint
-lint: ## Verifies `golint` passes
-	@echo "+ $@"
-	@golint main.go
-	@golint components/...
-
-.PHONY: vet
-vet: ## Verifies `go vet` passes
-	@echo "+ $@"
-	@$(GO) vet $(shell $(GO) list ./... | grep -v vendor | grep -v cross)
+	@$(GO) fmt ./...
 
 .PHONY: test
 test: ## Runs all tests
 	@echo "+ $@"
-	@$(GO) test -cover -v -tags "$(BUILDTAGS) cgo" $(shell $(GO) list ./... | grep -v vendor | grep -v cross)
-
-components/webui/mbeds/embedded-generated.go: $(wildcard components/webui/embeds/*)
-	@$(GO) generate components/webui/embeds/embedded.go
+	@golint ./...
+	@$(GO) vet ./...
+	@errcheck -asserts -blank ./...
+	@$(GO) test -cover -coverprofile=coverage.out -v -tags "$(BUILDTAGS) cgo" ./...
 
 $(NAME): $(wildcard *.go) $(wildcard */*.go) VERSION.txt
 	@echo "+ $@"
@@ -82,7 +72,7 @@ run: ## Run main
 dev: ## Watch source files and run tests and main on save
 	@echo "+ $@"
 	@$(DOCKER) run --name $(NAME)-postgres -p 5432:5432 -d postgres:10
-	@ag -l | entr -scrd 'make fmt vet lint test run'
+	@ag -l | entr -scrd 'make fmt test run'
 
 .PHONY: install
 install: ## Installs the executable or package
