@@ -2,9 +2,7 @@
 // sources:
 // sql/0001.up.sql
 // sql/0002.up.sql
-
 package assets
-
 
 import (
 	"bytes"
@@ -38,23 +36,16 @@ func bindataRead(data []byte, name string) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-
 type asset struct {
 	bytes []byte
-	info  fileInfoEx
-}
-
-type fileInfoEx interface {
-	os.FileInfo
-	MD5Checksum() string
+	info  os.FileInfo
 }
 
 type bindataFileInfo struct {
-	name        string
-	size        int64
-	mode        os.FileMode
-	modTime     time.Time
-	md5checksum string
+	name    string
+	size    int64
+	mode    os.FileMode
+	modTime time.Time
 }
 
 func (fi bindataFileInfo) Name() string {
@@ -69,9 +60,6 @@ func (fi bindataFileInfo) Mode() os.FileMode {
 func (fi bindataFileInfo) ModTime() time.Time {
 	return fi.modTime
 }
-func (fi bindataFileInfo) MD5Checksum() string {
-	return fi.md5checksum
-}
 func (fi bindataFileInfo) IsDir() bool {
 	return false
 }
@@ -79,90 +67,49 @@ func (fi bindataFileInfo) Sys() interface{} {
 	return nil
 }
 
-var _bindataSql0001upsql = []byte(
-	"\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x7c\x8f\xb1\xca\x83\x30\x14\x46\xf7\xfb\x14\xdf\xa8\xe0\x1b\xfc\x53\xfe" +
-	"\x78\x2d\xa1\x36\x96\x98\xa1\x4e\x25\xc5\x58\x02\xd6\x80\xda\xd2\xc7\x2f\xc1\xa1\x8b\x74\x3d\x1c\xce\xbd\x9f\x34" +
-	"\x2c\x2c\xc3\x8a\xff\x9a\xa1\x2a\xe8\xc6\x82\x2f\xaa\xb5\x2d\x86\x18\x17\x64\x04\x84\x1e\x8b\x9f\x83\x1b\x0b\x02" +
-	"\x26\xf7\xf0\x58\xfd\x7b\x2d\x88\x80\xb3\x51\x27\x61\x3a\x1c\xb9\x43\x16\xfa\x9c\xf2\x3f\xa2\x1f\xcd\x9b\x9b\x77" +
-	"\x9a\x43\x8c\xd7\xd0\x23\x4c\xab\xbf\xfb\x39\x91\x97\x1b\x9f\xfe\x0b\x76\x2e\x25\xab\x6a\x0c\xab\x83\xde\xd8\x16" +
-	"\xc9\x61\xb8\x62\xc3\x5a\xf2\xb6\x20\xb9\x68\x34\x4a\xae\xd9\x32\xa4\x68\xa5\x28\x39\xfd\xf9\x09\x00\x00\xff\xff" +
-	"\x16\xf7\xb2\x1e\xfb\x00\x00\x00")
+var _sql0001UpSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x7c\x8f\xb1\xca\x83\x30\x14\x46\xf7\xfb\x14\xdf\xa8\xe0\x1b\xfc\x53\xfe\x78\x2d\xa1\x36\x96\x98\xa1\x4e\x25\xc5\x58\x02\xd6\x80\xda\xd2\xc7\x2f\xc1\xa1\x8b\x74\x3d\x1c\xce\xbd\x9f\x34\x2c\x2c\xc3\x8a\xff\x9a\xa1\x2a\xe8\xc6\x82\x2f\xaa\xb5\x2d\x86\x18\x17\x64\x04\x84\x1e\x8b\x9f\x83\x1b\x0b\x02\x26\xf7\xf0\x58\xfd\x7b\x2d\x88\x80\xb3\x51\x27\x61\x3a\x1c\xb9\x43\x16\xfa\x9c\xf2\x3f\xa2\x1f\xcd\x9b\x9b\x77\x9a\x43\x8c\xd7\xd0\x23\x4c\xab\xbf\xfb\x39\x91\x97\x1b\x9f\xfe\x0b\x76\x2e\x25\xab\x6a\x0c\xab\x83\xde\xd8\x16\xc9\x61\xb8\x62\xc3\x5a\xf2\xb6\x20\xb9\x68\x34\x4a\xae\xd9\x32\xa4\x68\xa5\x28\x39\xfd\xf9\x09\x00\x00\xff\xff\x16\xf7\xb2\x1e\xfb\x00\x00\x00")
 
-func bindataSql0001upsqlBytes() ([]byte, error) {
+func sql0001UpSqlBytes() ([]byte, error) {
 	return bindataRead(
-		_bindataSql0001upsql,
+		_sql0001UpSql,
 		"sql/0001.up.sql",
 	)
 }
 
-
-
-func bindataSql0001upsql() (*asset, error) {
-	bytes, err := bindataSql0001upsqlBytes()
+func sql0001UpSql() (*asset, error) {
+	bytes, err := sql0001UpSqlBytes()
 	if err != nil {
 		return nil, err
 	}
 
-	info := bindataFileInfo{
-		name: "sql/0001.up.sql",
-		size: 251,
-		md5checksum: "",
-		mode: os.FileMode(420),
-		modTime: time.Unix(1542590413, 0),
-	}
-
+	info := bindataFileInfo{name: "sql/0001.up.sql", size: 251, mode: os.FileMode(420), modTime: time.Unix(1543200880, 0)}
 	a := &asset{bytes: bytes, info: info}
-
 	return a, nil
 }
 
-var _bindataSql0002upsql = []byte(
-	"\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x9c\x91\x31\x4f\xc3\x30\x10\x85\x77\xff\x8a\x37\x54\x6a\x83\xa8\x44\xe7" +
-	"\x4c\x6e\x7a\x8d\x22\x05\x07\x39\x49\x25\xa6\x28\xd4\x97\x62\x29\x38\xc5\x0e\xf0\xf7\x51\xd2\x96\x01\x31\xb1\xbe" +
-	"\xbb\xf7\xfc\x3d\x5f\xa2\x49\x56\x84\x42\x43\xd3\x53\x2e\x13\xc2\xbe\x56\x49\x95\x15\x0a\x81\xd9\x34\xdd\x30\x84" +
-	"\xa6\x75\xa6\x79\x69\x7d\x58\x45\x02\xd0\x54\xd5\x5a\x95\xb0\x6e\xe4\x13\x7b\xc8\x52\x2c\xb6\xc5\xee\x79\x21\x76" +
-	"\x94\xe4\x52\x93\x00\xd0\x35\xd6\xdc\x36\x62\xb1\xa5\x34\x53\x93\x9c\xa9\x92\x74\x85\x4c\x55\x05\xa6\xe4\x95\x6b" +
-	"\xdf\x78\x0a\xc5\x41\xe6\x35\x95\x58\x2d\x3b\xeb\xc3\xb8\x9c\xb5\xcb\x4b\x99\x4a\x61\xcd\xd5\xd3\x58\x13\x8b\x69" +
-	"\xb6\x5e\x23\x73\x81\xfd\x18\x30\xbe\x32\x1c\x7f\xe1\xd8\x5b\x76\x23\x5a\x67\xe0\xb9\x63\xcf\xee\xc8\x97\xa9\x9d" +
-	"\x37\xd9\xe0\xcc\x3e\x0c\xee\x37\xc9\x5c\xad\x1b\x86\xc6\x9a\x7b\x7c\xb6\xfd\x07\x47\x3f\x3c\xdd\x2c\x6e\x1e\xa2" +
-	"\xf8\x1f\xae\x4d\x74\x81\xbd\x36\xb9\xe2\x93\xda\xc5\xb7\x2f\x03\x72\xa9\xd2\x5a\xa6\x84\x73\x7f\x3e\x85\xf7\x1e" +
-	"\x87\x22\x97\x55\x96\x53\x2c\x44\x49\x39\x25\x15\xee\xb0\xd7\xc5\xe3\x9f\xf7\x88\xc5\x77\x00\x00\x00\xff\xff\x3a" +
-	"\xfe\xab\x8d\xc1\x01\x00\x00")
+var _sql0002UpSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x9c\x91\x31\x4f\xc3\x30\x10\x85\x77\xff\x8a\x37\x54\x6a\x83\xa8\x44\xe7\x4c\x6e\x7a\x8d\x22\x05\x07\x39\x49\x25\xa6\x28\xd4\x97\x62\x29\x38\xc5\x0e\xf0\xf7\x51\xd2\x96\x01\x31\xb1\xbe\xbb\xf7\xfc\x3d\x5f\xa2\x49\x56\x84\x42\x43\xd3\x53\x2e\x13\xc2\xbe\x56\x49\x95\x15\x0a\x81\xd9\x34\xdd\x30\x84\xa6\x75\xa6\x79\x69\x7d\x58\x45\x02\xd0\x54\xd5\x5a\x95\xb0\x6e\xe4\x13\x7b\xc8\x52\x2c\xb6\xc5\xee\x79\x21\x76\x94\xe4\x52\x93\x00\xd0\x35\xd6\xdc\x36\x62\xb1\xa5\x34\x53\x93\x9c\xa9\x92\x74\x85\x4c\x55\x05\xa6\xe4\x95\x6b\xdf\x78\x0a\xc5\x41\xe6\x35\x95\x58\x2d\x3b\xeb\xc3\xb8\x9c\xb5\xcb\x4b\x99\x4a\x61\xcd\xd5\xd3\x58\x13\x8b\x69\xb6\x5e\x23\x73\x81\xfd\x18\x30\xbe\x32\x1c\x7f\xe1\xd8\x5b\x76\x23\x5a\x67\xe0\xb9\x63\xcf\xee\xc8\x97\xa9\x9d\x37\xd9\xe0\xcc\x3e\x0c\xee\x37\xc9\x5c\xad\x1b\x86\xc6\x9a\x7b\x7c\xb6\xfd\x07\x47\x3f\x3c\xdd\x2c\x6e\x1e\xa2\xf8\x1f\xae\x4d\x74\x81\xbd\x36\xb9\xe2\x93\xda\xc5\xb7\x2f\x03\x72\xa9\xd2\x5a\xa6\x84\x73\x7f\x3e\x85\xf7\x1e\x87\x22\x97\x55\x96\x53\x2c\x44\x49\x39\x25\x15\xee\xb0\xd7\xc5\xe3\x9f\xf7\x88\xc5\x77\x00\x00\x00\xff\xff\x3a\xfe\xab\x8d\xc1\x01\x00\x00")
 
-func bindataSql0002upsqlBytes() ([]byte, error) {
+func sql0002UpSqlBytes() ([]byte, error) {
 	return bindataRead(
-		_bindataSql0002upsql,
+		_sql0002UpSql,
 		"sql/0002.up.sql",
 	)
 }
 
-
-
-func bindataSql0002upsql() (*asset, error) {
-	bytes, err := bindataSql0002upsqlBytes()
+func sql0002UpSql() (*asset, error) {
+	bytes, err := sql0002UpSqlBytes()
 	if err != nil {
 		return nil, err
 	}
 
-	info := bindataFileInfo{
-		name: "sql/0002.up.sql",
-		size: 449,
-		md5checksum: "",
-		mode: os.FileMode(420),
-		modTime: time.Unix(1543160809, 0),
-	}
-
+	info := bindataFileInfo{name: "sql/0002.up.sql", size: 449, mode: os.FileMode(420), modTime: time.Unix(1543201262, 0)}
 	a := &asset{bytes: bytes, info: info}
-
 	return a, nil
 }
 
-
-//
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
-//
 func Asset(name string) ([]byte, error) {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	if f, ok := _bindata[cannonicalName]; ok {
@@ -172,14 +119,11 @@ func Asset(name string) ([]byte, error) {
 		}
 		return a.bytes, nil
 	}
-	return nil, &os.PathError{Op: "open", Path: name, Err: os.ErrNotExist}
+	return nil, fmt.Errorf("Asset %s not found", name)
 }
 
-//
 // MustAsset is like Asset but panics when Asset would return an error.
 // It simplifies safe initialization of global variables.
-// nolint: deadcode
-//
 func MustAsset(name string) []byte {
 	a, err := Asset(name)
 	if err != nil {
@@ -189,10 +133,9 @@ func MustAsset(name string) []byte {
 	return a
 }
 
-//
 // AssetInfo loads and returns the asset info for the given name.
-// It returns an error if the asset could not be found or could not be loaded.
-//
+// It returns an error if the asset could not be found or
+// could not be loaded.
 func AssetInfo(name string) (os.FileInfo, error) {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	if f, ok := _bindata[cannonicalName]; ok {
@@ -202,13 +145,10 @@ func AssetInfo(name string) (os.FileInfo, error) {
 		}
 		return a.info, nil
 	}
-	return nil, &os.PathError{Op: "open", Path: name, Err: os.ErrNotExist}
+	return nil, fmt.Errorf("AssetInfo %s not found", name)
 }
 
-//
 // AssetNames returns the names of the assets.
-// nolint: deadcode
-//
 func AssetNames() []string {
 	names := make([]string, 0, len(_bindata))
 	for name := range _bindata {
@@ -217,15 +157,12 @@ func AssetNames() []string {
 	return names
 }
 
-//
 // _bindata is a table, holding each asset generator, mapped to its name.
-//
 var _bindata = map[string]func() (*asset, error){
-	"sql/0001.up.sql": bindataSql0001upsql,
-	"sql/0002.up.sql": bindataSql0002upsql,
+	"sql/0001.up.sql": sql0001UpSql,
+	"sql/0002.up.sql": sql0002UpSql,
 }
 
-//
 // AssetDir returns the file names below a certain
 // directory embedded in the file by go-bindata.
 // For example if you run go-bindata on data/... and data contains the
@@ -239,7 +176,6 @@ var _bindata = map[string]func() (*asset, error){
 // AssetDir("data/img") would return []string{"a.png", "b.png"}
 // AssetDir("foo.txt") and AssetDir("notexist") would return an error
 // AssetDir("") will return []string{"data"}.
-//
 func AssetDir(name string) ([]string, error) {
 	node := _bintree
 	if len(name) != 0 {
@@ -248,20 +184,12 @@ func AssetDir(name string) ([]string, error) {
 		for _, p := range pathList {
 			node = node.Children[p]
 			if node == nil {
-				return nil, &os.PathError{
-					Op: "open",
-					Path: name,
-					Err: os.ErrNotExist,
-				}
+				return nil, fmt.Errorf("Asset %s not found", name)
 			}
 		}
 	}
 	if node.Func != nil {
-		return nil, &os.PathError{
-			Op: "open",
-			Path: name,
-			Err: os.ErrNotExist,
-		}
+		return nil, fmt.Errorf("Asset %s not found", name)
 	}
 	rv := make([]string, 0, len(node.Children))
 	for childName := range node.Children {
@@ -270,16 +198,14 @@ func AssetDir(name string) ([]string, error) {
 	return rv, nil
 }
 
-
 type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
-
-var _bintree = &bintree{Func: nil, Children: map[string]*bintree{
-	"sql": {Func: nil, Children: map[string]*bintree{
-		"0001.up.sql": {Func: bindataSql0001upsql, Children: map[string]*bintree{}},
-		"0002.up.sql": {Func: bindataSql0002upsql, Children: map[string]*bintree{}},
+var _bintree = &bintree{nil, map[string]*bintree{
+	"sql": &bintree{nil, map[string]*bintree{
+		"0001.up.sql": &bintree{sql0001UpSql, map[string]*bintree{}},
+		"0002.up.sql": &bintree{sql0002UpSql, map[string]*bintree{}},
 	}},
 }}
 
@@ -301,7 +227,11 @@ func RestoreAsset(dir, name string) error {
 	if err != nil {
 		return err
 	}
-	return os.Chtimes(_filePath(dir, name), info.ModTime(), info.ModTime())
+	err = os.Chtimes(_filePath(dir, name), info.ModTime(), info.ModTime())
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // RestoreAssets restores an asset under the given directory recursively
@@ -325,3 +255,4 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
+

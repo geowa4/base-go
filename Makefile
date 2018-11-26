@@ -34,10 +34,10 @@ clean: ## Cleanup any build binaries or packages
 
 .PHONY: deps
 deps: ## Installs all dependencies
-	go get -d -v ./..
+	# go get -d -v ./..
 	go get -u golang.org/x/lint/golint
-	go get -u github.com/shuLhan/go-bindata/...
 	go get -u github.com/kisielk/errcheck
+	go get -u github.com/go-bindata/go-bindata/go-bindata
 
 .PHONY: fmt
 fmt: ## Verifies all files have been `gofmt`ed
