@@ -34,7 +34,6 @@ clean: ## Cleanup any build binaries or packages
 
 .PHONY: deps
 deps: ## Installs all dependencies
-	# go get -d -v ./..
 	go get -u golang.org/x/lint/golint
 	go get -u github.com/kisielk/errcheck
 	go get -u github.com/go-bindata/go-bindata/go-bindata
@@ -96,6 +95,7 @@ ci: ## Runs test suite in Docker build
 release: *.go VERSION.txt ## Builds the cross-compiled binaries, naming them in such a way for release (eg. binary-GOOS-GOARCH)
 	@echo "+ $@"
 	$(foreach GOOSARCH,$(GOOSARCHES), $(call buildrelease,$(subst /,,$(dir $(GOOSARCH))),$(notdir $(GOOSARCH))))
+	@cp Dockerfile $(BUILDDIR)
 	@$(DOCKER) build --pull -t $(DOCKERUSER)/$(NAME):$(GITCOMMIT) --build-arg SERVICE_NAME=$(NAME) $(BUILDDIR)
 	@$(DOCKER) tag $(DOCKERUSER)/$(NAME):$(GITCOMMIT) $(DOCKERUSER)/$(NAME):$(VERSION)
 
