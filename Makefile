@@ -35,7 +35,6 @@ clean: ## Cleanup any build binaries or packages
 .PHONY: deps
 deps: ## Installs all dependencies
 	go get -u golang.org/x/lint/golint
-	go get -u github.com/kisielk/errcheck
 	go get -u github.com/go-bindata/go-bindata/go-bindata
 
 .PHONY: fmt
@@ -48,7 +47,6 @@ test: ## Runs all tests
 	@echo "+ $@"
 	@golint ./...
 	@$(GO) vet ./...
-	@errcheck -asserts -blank ./...
 	@$(GO) test -cover -coverprofile=coverage.out -v -tags "$(BUILDTAGS) cgo" ./...
 
 $(NAME): $(wildcard *.go) $(wildcard */*.go) VERSION.txt
