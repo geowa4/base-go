@@ -19,8 +19,13 @@ Install these tools in addition to those for quick edits.
 1. [ag](https://geoff.greer.fm/ag/)
 1. [entr](http://entrproject.org/)
 
-Run `make dev` to run the application and watch for changes.
-When done, run `make clean`.
+To build and run the application, run these commands.
+
+1. `make deps`
+1. `make dev`
+1. `make clean`
+
+Changing any static file (e.g. HTML, SQL), run `make embeds`.
 
 ### Pull Requests
 
