@@ -34,10 +34,11 @@ clean: ## Cleanup any build binaries or packages
 
 .PHONY: deps
 deps: ## Installs all dependencies
-	go get -d -v ./..
-	go get -u golang.org/x/lint/golint
-	go get -u github.com/shuLhan/go-bindata/...
-	go get -u github.com/kisielk/errcheck
+	@echo "+ $@"
+	@$(GO) get -u -d -v ./...
+	@$(GO) get -u github.com/twitchtv/retool
+	@retool sync
+	@retool build
 
 .PHONY: fmt
 fmt: ## Verifies all files have been `gofmt`ed
@@ -47,9 +48,9 @@ fmt: ## Verifies all files have been `gofmt`ed
 .PHONY: test
 test: ## Runs all tests
 	@echo "+ $@"
-	@golint ./...
+	@retool do golint ./...
 	@$(GO) vet ./...
-	@errcheck -asserts -blank ./...
+	@retool do errcheck -asserts -blank ./...
 	@$(GO) test -cover -coverprofile=coverage.out -v -tags "$(BUILDTAGS) cgo" ./...
 
 $(NAME): $(wildcard *.go) $(wildcard */*.go) VERSION.txt
@@ -58,7 +59,7 @@ $(NAME): $(wildcard *.go) $(wildcard */*.go) VERSION.txt
 
 .PHONY: embeds
 embeds: ## Embeds static assets into Go source
-	@$(GO) generate ./...
+	@retool do $(GO) generate ./...
 
 .PHONY: build
 build: embeds $(NAME) ## Builds a dynamic executable or package

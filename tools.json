@@ -1,0 +1,17 @@
+{
+  "Tools": [
+    {
+      "Repository": "github.com/shuLhan/go-bindata/cmd/go-bindata",
+      "Commit": "ec2fac794d458860331501421b2694c3ce0d6ce8"
+    },
+    {
+      "Repository": "golang.org/x/lint/golint",
+      "Commit": "c67002cb31c3a748b7688c27f20d8358b4193582"
+    },
+    {
+      "Repository": "github.com/kisielk/errcheck",
+      "Commit": "1787c4bee836470bf45018cfbc783650db3c6501"
+    }
+  ],
+  "RetoolVersion": "1.3.7"
+}
