@@ -11,6 +11,7 @@ GO := go
 GO_VERSION := $(shell grep golang .tool-versions | awk '{print $$2}')
 DOCKER := docker
 DOCKERUSER := $(shell whoami)
+TESTCOV := coverage.out
 SED := $(shell which gsed || which sed)
 MD5 := $(shell which gmd5sum || which md5sum)
 SHA256 := $(shell which gsha256sum || which sha256sum)
@@ -30,6 +31,7 @@ clean: ## Cleanup any build binaries or packages
 	@echo "+ $@"
 	$(RM) $(NAME)
 	$(RM) -r $(BUILDDIR)
+	$(RM) $(TESTCOV)
 	-@$(DOCKER) rm -f $(NAME)-postgres
 
 .PHONY: deps
@@ -47,7 +49,7 @@ test: ## Runs all tests
 	@echo "+ $@"
 	@golint ./...
 	@$(GO) vet ./...
-	@$(GO) test -cover -coverprofile=coverage.out -v -tags "$(BUILDTAGS) cgo" ./...
+	@$(GO) test -cover -coverprofile=$(TESTCOV) -v -tags "$(BUILDTAGS) cgo" ./...
 
 $(NAME): $(wildcard *.go) $(wildcard */*.go) VERSION.txt
 	@echo "+ $@"

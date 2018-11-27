@@ -1,7 +1,7 @@
 ARG GO_VERSION
 FROM golang:${GO_VERSION}
-WORKDIR /go/src/github.com/geowa4/base-go
+RUN mkdir -p /ci
+WORKDIR /ci
 COPY . .
 RUN make deps
 RUN make
-RUN ls
