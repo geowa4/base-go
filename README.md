@@ -13,6 +13,8 @@ With those, run `make ci` to run all the tests.
 
 ### Bigger Changes
 
+Since this project uses Go modules, ensure this repo is cloned _outside_ your `$GOPATH`.
+
 Install these tools in addition to those for quick edits.
 
 1. Go installation matching [.tool-versions](./.tool-versions)
