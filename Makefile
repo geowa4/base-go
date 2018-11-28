@@ -31,7 +31,6 @@ clean: ## Cleanup any build binaries or packages
 	@echo "+ $@"
 	$(RM) $(NAME)
 	$(RM) -r $(BUILDDIR)
-	$(RM) $(TESTCOV)
 	-@$(DOCKER) rm -f $(NAME)-postgres
 
 .PHONY: deps
