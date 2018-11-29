@@ -1,0 +1,2 @@
+DROP TABLE foos CASCADE;
+DROP TABLE bars;
