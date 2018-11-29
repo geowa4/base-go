@@ -2,58 +2,68 @@ package migrations
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/geowa4/base-go/components/migrations/internal/assets"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	"github.com/golang-migrate/migrate/v4/source"
+	bindata "github.com/golang-migrate/migrate/v4/source/go_bindata"
 	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 )
 
-//go:generate go-bindata -pkg assets -o internal/assets/embeds.go sql/...
+//go:generate go-bindata -pkg assets -o internal/assets/embeds.go -prefix sql/ sql/...
 
-func createSchemaMigrationsTable(db *sql.DB) {
-	const createSchemaMigrationsStatement = `
-	CREATE TABLE IF NOT EXISTS schema_migrations (
-		version smallint,
-		created_at timestamp without time zone default (now() at time zone 'utc'),
-
-		PRIMARY KEY (version)
+func newSourceDriver() (source.Driver, error) {
+	s := bindata.Resource(
+		assets.AssetNames(),
+		func(name string) ([]byte, error) {
+			return assets.Asset(name)
+		},
 	)
-	`
-	_, err := db.Exec(createSchemaMigrationsStatement)
-	if err != nil {
-		log.Fatal().Err(err).Msg("Error creating schema migrations table.")
-	}
+
+	return bindata.WithInstance(s)
 }
 
 //MigrateDatabase migrates the database to the latest version
 //with the embedded scripts.
 func MigrateDatabase(log zerolog.Logger, db *sql.DB) {
-	createSchemaMigrationsTable(db)
-	row := db.QueryRow("SELECT version FROM schema_migrations ORDER BY version DESC LIMIT 1")
-	var version int
-	err := row.Scan(&version)
-	if err == sql.ErrNoRows {
-		version = 0
-	} else if err != nil {
-		log.Fatal().Err(err).Msg("Error retrieving latest database version.")
+	var (
+		err error
+		m   *migrate.Migrate
+	)
+
+	sourceDriver, err := newSourceDriver()
+	if err != nil {
+		log.Fatal().Err(err).Msg("Error creating bindata source driver.")
 	}
-	log.Info().Msg(fmt.Sprintf("Current database version: %d", version))
-	for nextVersion := version + 1; true; nextVersion++ {
-		log.Info().Msg(fmt.Sprintf("Attempting to migrate database to version %d using sql/%04d.up.sql", nextVersion, nextVersion))
-		migrationScript, err := assets.Asset(fmt.Sprintf("sql/%04d.up.sql", nextVersion))
-		if err != nil {
-			log.Info().Msg(fmt.Sprintf("No database migration found for version %d.", nextVersion))
-			break
+
+	dbDriver, err := postgres.WithInstance(db, &postgres.Config{})
+	if err != nil {
+		log.Fatal().Err(err).Msg("Error creating database driver.")
+	}
+	m, err = migrate.NewWithInstance("go-bindata", sourceDriver, "postgres", dbDriver)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Error creating migration from driver.")
+	}
+	runMigration(log, m)
+}
+
+func runMigration(log zerolog.Logger, m *migrate.Migrate) {
+	defer func() {
+		srcErr, dbErr := m.Close()
+		if srcErr != nil {
+			log.Fatal().Err(srcErr).Msg("Error closing source.")
 		}
-		_, err = db.Exec(string(migrationScript))
-		if err != nil {
-			log.Fatal().Err(err).Msg(fmt.Sprintf("Error migrating database to version %d.", nextVersion))
+		if dbErr != nil {
+			log.Fatal().Err(dbErr).Msg("Error closing database.")
 		}
-		_, err = db.Exec("INSERT INTO schema_migrations (version) VALUES ($1)", nextVersion)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Failed to insert into version table.")
-		}
-		log.Info().Msg(fmt.Sprintf("Applied database migration for version %d.", nextVersion))
+	}()
+	err := m.Up()
+	if err == migrate.ErrNoChange {
+		log.Info().Msg("No database migrations to apply.")
+	} else if err != nil {
+		log.Fatal().Err(err).Msg("Error running migration.")
+	} else {
+		log.Info().Msg("Schema migrations applied successfully.")
 	}
 }
