@@ -1,6 +1,7 @@
 PREFIX?=$(shell pwd)
 NAME := base-go
-BUILDDIR := ${PREFIX}/cross
+DISTDIR := ${PREFIX}/cross
+BUILDDIR := ${PREFIX}/build
 VERSION := $(shell cat VERSION.txt)
 GITCOMMIT := $(shell git rev-parse --short HEAD)
 GITUNTRACKEDCHANGES := $(shell git status --porcelain --untracked-files=no)
@@ -30,7 +31,7 @@ help:
 clean: ## Cleanup any build binaries or packages
 	@echo "+ $@"
 	$(RM) $(NAME)
-	$(RM) -r $(BUILDDIR)
+	$(RM) -r $(DISTDIR)
 	-@$(DOCKER) rm -f $(NAME)-postgres
 
 .PHONY: deps
@@ -79,23 +80,23 @@ install: ## Installs the executable or package
 
 define buildrelease
 GOOS=$(1) GOARCH=$(2) CGO_ENABLED=0 $(GO) build \
-	 -o $(BUILDDIR)/$(NAME)-$(1)-$(2) \
+	 -o $(DISTDIR)/$(NAME)-$(1)-$(2) \
 	 -a -tags "$(BUILDTAGS) static_build netgo" \
 	 -installsuffix netgo ${GO_LDFLAGS_STATIC} .;
-$(MD5) $(BUILDDIR)/$(NAME)-$(1)-$(2) > $(BUILDDIR)/$(NAME)-$(1)-$(2).md5;
-$(SHA256) $(BUILDDIR)/$(NAME)-$(1)-$(2) > $(BUILDDIR)/$(NAME)-$(1)-$(2).sha256;
+$(MD5) $(DISTDIR)/$(NAME)-$(1)-$(2) > $(DISTDIR)/$(NAME)-$(1)-$(2).md5;
+$(SHA256) $(DISTDIR)/$(NAME)-$(1)-$(2) > $(DISTDIR)/$(NAME)-$(1)-$(2).sha256;
 endef
 
 .PHONY: ci
 ci: ## Runs test suite in Docker build
-	docker build --pull -f ci.dockerfile --build-arg GO_VERSION=$(GO_VERSION) .
+	docker build --pull -f $(BUILDDIR)/ci/Dockerfile --build-arg GO_VERSION=$(GO_VERSION) .
 
 .PHONY: release
 release: *.go VERSION.txt ## Builds the cross-compiled binaries, naming them in such a way for release (eg. binary-GOOS-GOARCH)
 	@echo "+ $@"
 	$(foreach GOOSARCH,$(GOOSARCHES), $(call buildrelease,$(subst /,,$(dir $(GOOSARCH))),$(notdir $(GOOSARCH))))
-	@cp Dockerfile $(BUILDDIR)
-	@$(DOCKER) build --pull -t $(DOCKERUSER)/$(NAME):$(GITCOMMIT) --build-arg SERVICE_NAME=$(NAME) $(BUILDDIR)
+	@cp $(BUILDDIR)/Dockerfile $(DISTDIR)
+	@$(DOCKER) build --pull -t $(DOCKERUSER)/$(NAME):$(GITCOMMIT) --build-arg SERVICE_NAME=$(NAME) $(DISTDIR)
 	@$(DOCKER) tag $(DOCKERUSER)/$(NAME):$(GITCOMMIT) $(DOCKERUSER)/$(NAME):$(VERSION)
 
 .PHONY: bump-version
