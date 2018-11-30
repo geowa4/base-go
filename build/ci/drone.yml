@@ -1,0 +1,13 @@
+kind: pipeline
+name: default
+
+steps:
+  - name: build
+    image: golang
+    tags:
+      - 1.11
+      - latest
+    pull: always
+    commands:
+      - make deps
+      - make
