@@ -49,15 +49,6 @@ func MigrateDatabase(log zerolog.Logger, db *sql.DB) {
 }
 
 func runMigration(log zerolog.Logger, m *migrate.Migrate) {
-	defer func() {
-		srcErr, dbErr := m.Close()
-		if srcErr != nil {
-			log.Fatal().Err(srcErr).Msg("Error closing source.")
-		}
-		if dbErr != nil {
-			log.Fatal().Err(dbErr).Msg("Error closing database.")
-		}
-	}()
 	err := m.Up()
 	if err == migrate.ErrNoChange {
 		log.Info().Msg("No database migrations to apply.")
