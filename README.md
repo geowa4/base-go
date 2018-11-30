@@ -54,17 +54,11 @@ _All environment variables are prefixed with `BASE_GO_`._
 | Variable     | Default   |
 | ------------ | --------- |
 | APP_PORT     | 8000      |
-| ------------ | --------- |
 | METRICS_PORT | 8001      |
-| ------------ | --------- |
 | LOG_LEVEL    | info      |
-| ------------ | --------- |
 | DB_HOST      | 127.0.0.1 |
-| ------------ | --------- |
 | DB_PORT      | 5432      |
-| ------------ | --------- |
 | DB_USER      | postgres  |
-| ------------ | --------- |
 | DB_SSLMODE   | disable   |
 
 Valid values for `LOG_LEVEL` include `debug`, `info`, `warn`, `error`, `fatal`, and `panic`.
