@@ -24,7 +24,7 @@ Install these tools in addition to those for quick edits.
 To build and run the application, run these commands.
 
 1. `make deps`
-1. `make dev`
+1. `make clean dev`
 1. `make clean`
 
 Changing any static file (e.g. HTML, SQL), run `make embeds`.
@@ -49,7 +49,7 @@ If one is not provided, the process will crash.
 The main application runs on port 8000, and the metrics server is available on port 8001.
 Configuring those ports, log level, and database settings can be done via environment variables.
 
-_All environment variables are prefixed with `BASE_GO_`._
+_All environment variables are prefixed with `BASE_GO_`.\_
 
 | Variable     | Default   |
 | ------------ | --------- |
