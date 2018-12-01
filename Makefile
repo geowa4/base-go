@@ -91,6 +91,7 @@ endef
 release: *.go VERSION.txt ## Builds the cross-compiled binaries, naming them in such a way for release (eg. binary-GOOS-GOARCH)
 	@echo "+ $@"
 	$(foreach GOOSARCH,$(GOOSARCHES), $(call buildrelease,$(subst /,,$(dir $(GOOSARCH))),$(notdir $(GOOSARCH))))
+	@cp LICENSE $(DISTDIR)
 	@cp $(BUILDDIR)/Dockerfile $(DISTDIR)
 	@$(DOCKER) build --pull -t $(DOCKERUSER)/$(NAME):$(GITCOMMIT) --build-arg SERVICE_NAME=$(NAME) $(DISTDIR)
 	@$(DOCKER) tag $(DOCKERUSER)/$(NAME):$(GITCOMMIT) $(DOCKERUSER)/$(NAME):$(VERSION)
