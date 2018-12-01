@@ -87,10 +87,6 @@ $(MD5) $(DISTDIR)/$(NAME)-$(1)-$(2) > $(DISTDIR)/$(NAME)-$(1)-$(2).md5;
 $(SHA256) $(DISTDIR)/$(NAME)-$(1)-$(2) > $(DISTDIR)/$(NAME)-$(1)-$(2).sha256;
 endef
 
-.PHONY: ci
-ci: ## Runs test suite in Docker build
-	docker build --pull -f $(BUILDDIR)/ci/Dockerfile --build-arg GO_VERSION=$(GO_VERSION) .
-
 .PHONY: release
 release: *.go VERSION.txt ## Builds the cross-compiled binaries, naming them in such a way for release (eg. binary-GOOS-GOARCH)
 	@echo "+ $@"
