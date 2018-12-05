@@ -39,8 +39,8 @@ func TestLoadOneFoo(t *testing.T) {
 		},
 	}
 	mock := &mockAccessor{}
-	resolver := &fooResolver{accessor: mock}
-	value, err := resolver.resolve(params)
+	resolver := &fooLoadResolver{accessor: mock}
+	value, err := resolver.query(params.Args, params.Info.FieldASTs)
 	if err != nil {
 		t.Fail()
 	}
@@ -56,8 +56,8 @@ func TestLoadOneFoo(t *testing.T) {
 func TestLoadManyFoos(t *testing.T) {
 	params := graphql.ResolveParams{}
 	mock := &mockAccessor{}
-	resolver := &fooResolver{accessor: mock}
-	value, err := resolver.resolve(params)
+	resolver := &fooLoadResolver{accessor: mock}
+	value, err := resolver.query(params.Args, params.Info.FieldASTs)
 	if err != nil {
 		t.Fail()
 	}
@@ -90,8 +90,8 @@ func TestLoadOneFooWithBars(t *testing.T) {
 		},
 	}
 	mock := &mockAccessor{}
-	resolver := &fooResolver{accessor: mock}
-	value, err := resolver.resolve(params)
+	resolver := &fooLoadResolver{accessor: mock}
+	value, err := resolver.query(params.Args, params.Info.FieldASTs)
 	if err != nil {
 		t.Fail()
 	}
@@ -124,8 +124,8 @@ func TestLoadManyFoosWithBars(t *testing.T) {
 		},
 	}
 	mock := &mockAccessor{}
-	resolver := &fooResolver{accessor: mock}
-	value, err := resolver.resolve(params)
+	resolver := &fooLoadResolver{accessor: mock}
+	value, err := resolver.query(params.Args, params.Info.FieldASTs)
 	if err != nil {
 		t.Fail()
 	}

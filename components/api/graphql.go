@@ -18,7 +18,19 @@ func newQueryType(db *sqlx.DB) *graphql.Object {
 			Name: "Query",
 			Fields: graphql.Fields{
 				"me":   me.NewMeField(),
-				"foos": foos.NewFooField(db),
+				"foos": foos.NewFooQueryField(db),
+			},
+		},
+	)
+}
+
+func newMutationType(db *sqlx.DB) *graphql.Object {
+	return graphql.NewObject(
+		graphql.ObjectConfig{
+			Name: "Mutation",
+			Fields: graphql.Fields{
+				"createFoo": foos.NewFooCreateField(db),
+				"createBar": foos.NewBarCreateField(db),
 			},
 		},
 	)
@@ -26,9 +38,9 @@ func newQueryType(db *sqlx.DB) *graphql.Object {
 
 // NewGraphQLHandler creates a new HTTP handler for GraphQL.
 func NewGraphQLHandler(db *sqlx.DB) http.Handler {
-	queryType := newQueryType(db)
 	schema, err := graphql.NewSchema(graphql.SchemaConfig{
-		Query: queryType,
+		Query:    newQueryType(db),
+		Mutation: newMutationType(db),
 	})
 	if err != nil {
 		log.Fatal().Err(err).Msg("GraphQL initiailization failed.")

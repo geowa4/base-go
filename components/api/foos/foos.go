@@ -1,21 +1,17 @@
 package foos
 
-import (
-	"github.com/jmoiron/sqlx"
-
-	"github.com/graphql-go/graphql"
-)
+import "github.com/graphql-go/graphql"
 
 type foo struct {
-	ID   int    `json:"id"`
+	ID   int64  `json:"id"`
 	Name string `json:"name"`
 	Bars []*bar `json:"bars"`
 }
 
 type bar struct {
-	ID    int  `json:"id"`
-	Foo   *foo `json:"foo"`
-	Value int  `json:"value"`
+	ID    int64 `json:"id"`
+	Foo   *foo  `json:"foo"`
+	Value int64 `json:"value"`
 }
 
 func makeFooType() *graphql.Object {
@@ -58,24 +54,4 @@ func makeFooType() *graphql.Object {
 		},
 	)
 	return fooType
-}
-
-//NewFooField makes a new GraphQL field for the foo type.
-func NewFooField(db *sqlx.DB) *graphql.Field {
-	fooType := makeFooType()
-	resolver := &fooResolver{
-		accessor: &fooDataAccessor{
-			db: db,
-		},
-	}
-	return &graphql.Field{
-		Name: "foos",
-		Type: graphql.NewList(fooType),
-		Args: graphql.FieldConfigArgument{
-			"id": &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
-		},
-		Resolve: resolver.resolve,
-	}
 }

@@ -4,7 +4,7 @@ import "testing"
 
 func TestConvertingMapToSlice(t *testing.T) {
 	fda := &fooDataAccessor{}
-	foosByID := make(map[int]*foo)
+	foosByID := make(map[int64]*foo)
 	foosByID[1] = &foo{ID: 1}
 	foosByID[2] = &foo{ID: 2}
 	foosByID[3] = &foo{ID: 3}
