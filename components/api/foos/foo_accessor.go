@@ -3,16 +3,12 @@ package foos
 import (
 	"database/sql"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/rs/zerolog/log"
 )
 
-type fooDB interface {
-	Select(dest interface{}, query string, args ...interface{}) error
-	Query(query string, args ...interface{}) (*sql.Rows, error)
-}
-
 type fooDataAccessor struct {
-	db fooDB
+	db *sqlx.DB
 }
 
 const baseFooStatement string = "select foos.id, foos.name from foos"
@@ -39,14 +35,14 @@ func (fda *fooDataAccessor) loadAll() ([]*foo, error) {
 	return foos, nil
 }
 
-func (fda *fooDataAccessor) parseRows(rows *sql.Rows) (map[int]*foo, error) {
+func (fda *fooDataAccessor) parseFoosWithBars(rows *sql.Rows) (map[int64]*foo, error) {
 	var (
-		fooID    int
+		fooID    int64
 		fooName  string
-		barID    int
-		barValue int
+		barID    sql.NullInt64
+		barValue sql.NullInt64
 	)
-	fooMap := make(map[int]*foo)
+	fooMap := make(map[int64]*foo)
 	for rows.Next() {
 		err := rows.Scan(&fooID, &fooName, &barID, &barValue)
 		if err != nil {
@@ -54,9 +50,9 @@ func (fda *fooDataAccessor) parseRows(rows *sql.Rows) (map[int]*foo, error) {
 		}
 		if f, ok := fooMap[fooID]; ok {
 			f.Bars = append(f.Bars, &bar{
-				ID:    barID,
+				ID:    barID.Int64,
 				Foo:   f,
-				Value: barValue,
+				Value: barValue.Int64,
 			})
 		} else {
 			newFoo := &foo{
@@ -64,11 +60,13 @@ func (fda *fooDataAccessor) parseRows(rows *sql.Rows) (map[int]*foo, error) {
 				Name: fooName,
 				Bars: make([]*bar, 0),
 			}
-			newFoo.Bars = append(newFoo.Bars, &bar{
-				ID:    barID,
-				Foo:   newFoo,
-				Value: barValue,
-			})
+			if barID.Valid {
+				newFoo.Bars = append(newFoo.Bars, &bar{
+					ID:    barID.Int64,
+					Foo:   newFoo,
+					Value: barValue.Int64,
+				})
+			}
 			fooMap[fooID] = newFoo
 		}
 	}
@@ -76,7 +74,7 @@ func (fda *fooDataAccessor) parseRows(rows *sql.Rows) (map[int]*foo, error) {
 }
 
 func (fda *fooDataAccessor) handleRowsWithBars(rows *sql.Rows, err error) ([]*foo, error) {
-	fooMap, err := fda.parseRows(rows)
+	fooMap, err := fda.parseFoosWithBars(rows)
 	if err != nil {
 		return nil, err
 	}
@@ -113,10 +111,26 @@ func (fda *fooDataAccessor) loadAllWithBars() ([]*foo, error) {
 	return fda.handleRowsWithBars(rows, err)
 }
 
-func (fda *fooDataAccessor) mapToSlice(foosByID map[int]*foo) []*foo {
+func (fda *fooDataAccessor) mapToSlice(foosByID map[int64]*foo) []*foo {
 	fooSlice := make([]*foo, 0, len(foosByID))
 	for _, foo := range foosByID {
 		fooSlice = append(fooSlice, foo)
 	}
 	return fooSlice
+}
+
+func (fda *fooDataAccessor) saveFoo(name string) (id int64, err error) {
+	err = fda.db.QueryRow("INSERT INTO foos(name) VALUES ($1) RETURNING id", name).Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
+}
+
+func (fda *fooDataAccessor) saveBar(fooID, value int) (id int64, err error) {
+	err = fda.db.QueryRow("INSERT INTO bars(foo_id, value) VALUES ($1,$2) RETURNING id", fooID, value).Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
 }

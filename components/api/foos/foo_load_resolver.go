@@ -1,8 +1,8 @@
 package foos
 
 import (
-	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/language/ast"
+	"github.com/jmoiron/sqlx"
 )
 
 type fooDataLoader interface {
@@ -12,13 +12,21 @@ type fooDataLoader interface {
 	loadAllWithBars() ([]*foo, error)
 }
 
-type fooResolver struct {
+type fooLoadResolver struct {
 	accessor fooDataLoader
 	fooID    int
 	loadOne  bool
 }
 
-func (f *fooResolver) shouldLoadBars(fieldASTs []*ast.Field) bool {
+func newLoadResolver(db *sqlx.DB) *fooLoadResolver {
+	return &fooLoadResolver{
+		accessor: &fooDataAccessor{
+			db: db,
+		},
+	}
+}
+
+func (f *fooLoadResolver) shouldLoadBars(fieldASTs []*ast.Field) bool {
 	for _, fieldAST := range fieldASTs {
 		for _, selection := range fieldAST.SelectionSet.Selections {
 			field, ok := selection.(*ast.Field)
@@ -33,28 +41,28 @@ func (f *fooResolver) shouldLoadBars(fieldASTs []*ast.Field) bool {
 	return false
 }
 
-func (f *fooResolver) loadFoosWithBars() ([]*foo, error) {
+func (f *fooLoadResolver) loadFoosWithBars() ([]*foo, error) {
 	if f.loadOne {
 		return f.accessor.loadOneWithBars(f.fooID)
 	}
 	return f.accessor.loadAllWithBars()
 }
 
-func (f *fooResolver) loadFoos() ([]*foo, error) {
+func (f *fooLoadResolver) loadFoos() ([]*foo, error) {
 	if f.loadOne {
 		return f.accessor.loadOne(f.fooID)
 	}
 	return f.accessor.loadAll()
 }
 
-func (f *fooResolver) resolve(p graphql.ResolveParams) (interface{}, error) {
-	fooIDParam, fooIDParamOK := p.Args["id"].(int)
+func (f *fooLoadResolver) query(args map[string]interface{}, fieldASTs []*ast.Field) (interface{}, error) {
+	fooIDParam, fooIDParamOK := args["id"].(int)
 	if fooIDParamOK {
 		f.fooID = fooIDParam
 		f.loadOne = true
 	}
 
-	shouldLoadBars := f.shouldLoadBars(p.Info.FieldASTs)
+	shouldLoadBars := f.shouldLoadBars(fieldASTs)
 	var (
 		foos []*foo
 		err  error
