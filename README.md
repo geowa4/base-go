@@ -26,6 +26,11 @@ To build and run the application, run these commands.
 
 Changing any static file (e.g. HTML, SQL), run `make embeds`.
 
+### API Testing
+
+A [Postman](https://www.getpostman.com/) collection is provided in [build/postman](./build/postman).
+This can either be imported into Postman or run on the command line with [Newman](https://learning.getpostman.com/docs/postman/collection_runs/command_line_integration_with_newman/).
+
 ### Pull Requests
 
 If you find any bugs or have any suggestions, please open an issue on GitHub.

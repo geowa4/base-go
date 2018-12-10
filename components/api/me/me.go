@@ -20,7 +20,7 @@ func NewMeField() *graphql.Field {
 			Name: "User",
 			Fields: graphql.Fields{
 				"id": &graphql.Field{
-					Type: graphql.String,
+					Type: graphql.Int,
 				},
 				"name": &graphql.Field{
 					Type: graphql.String,

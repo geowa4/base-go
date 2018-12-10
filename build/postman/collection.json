@@ -1,0 +1,298 @@
+{
+	"info": {
+		"_postman_id": "ef16bec0-a5a5-4464-b5ca-a4240fcddb48",
+		"name": "Base Go",
+		"description": "Simple collection for my toy base Go project (https://github.com/geowa4/base-go).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Me",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6b1381ea-7956-47a9-9a04-dd2865eec969",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response is OK JSON\", function () {",
+							"    pm.response.to.be.ok;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"I am anonymous\", function () {",
+							"    let me = pm.response.json().data.me;",
+							"    pm.expect(me.id).to.equal(0);",
+							"    pm.expect(me.name).to.equal(\"Anonymous\");",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "content-type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"query\":\"{\\n  me {\\n    name\\n    id\\n  }\\n}\\n\"}"
+				},
+				"url": {
+					"raw": "http://localhost:8000/graphql",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"graphql"
+					]
+				},
+				"description": "Generated from a curl request: \ncurl --request POST \\\n  --url http://localhost:8000/graphql \\\n  --header 'content-type: application/json' \\\n  --data '{\\\"query\\\":\\\"{\\n  me {\\n    name\\n    id\\n  }\\n}\\n\\\"}'"
+			},
+			"response": []
+		},
+		{
+			"name": "Me Authorized",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "351d881d-73e6-44a5-8b0f-ea02c2656f4c",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response is OK JSON\", function () {",
+							"    pm.response.to.be.ok;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"I am anonymous\", function () {",
+							"    let me = pm.response.json().data.me;",
+							"    pm.expect(me.id).to.equal(1);",
+							"    pm.expect(me.name).to.contain(\"Bearer\");",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "content-type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"query\":\"{\\n  me {\\n    name\\n    id\\n  }\\n}\\n\"}"
+				},
+				"url": {
+					"raw": "http://localhost:8000/graphql",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"graphql"
+					]
+				},
+				"description": "Generated from a curl request: \ncurl --request POST \\\n  --url http://localhost:8000/graphql \\\n  --header 'content-type: application/json' \\\n  --data '{\\\"query\\\":\\\"{\\n  me {\\n    name\\n    id\\n  }\\n}\\n\\\"}'"
+			},
+			"response": []
+		},
+		{
+			"name": "Seed",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c631b80e-1c79-48b8-b4a3-7e698fb2a15f",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response is OK JSON\", function () {",
+							"    pm.response.to.be.ok;",
+							"    pm.response.to.be.json;",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "content-type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"query\":\"mutation {\\n  onlyFoo: createFoo(name: \\\"air force one\\\") {\\n    id\\n  }\\n  firstBar: createBar(fooID: 1, value: 1) {\\n    id\\n  }\\n  secondBar: createBar(fooID: 1, value: 2) {\\n    id\\n  }\\n}\"}"
+				},
+				"url": {
+					"raw": "http://localhost:8000/graphql",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"graphql"
+					]
+				},
+				"description": "Generated from a curl request: \ncurl --request POST \\\n  --url http://localhost:8000/graphql \\\n  --header 'content-type: application/json' \\\n  --data '{\\\"query\\\":\\\"mutation {\\n  onlyFoo: createFoo(name: \\\\\"air force one\\\\\") {\\n    id\\n  }\\n  firstBar: createBar(fooID: 1, value: 1) {\\n    id\\n  }\\n  secondBar: createBar(fooID: 1, value: 2) {\\n    id\\n  }\\n}\\\"}'"
+			},
+			"response": []
+		},
+		{
+			"name": "Load First Foo with Depth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "75069f55-056d-4878-9707-80a99d3c6d55",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response is OK JSON\", function () {",
+							"    pm.response.to.be.ok;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Foos is an array\", function () {",
+							"    let foos = pm.response.json().data.foos;",
+							"    pm.expect(foos).to.be.an('array');",
+							"    pm.expect(foos.length).to.equal(1);",
+							"});",
+							"",
+							"pm.test(\"Foo has bars has foos\", function () {",
+							"    let firstFoo = pm.response.json().data.foos[0];",
+							"    pm.expect(firstFoo.bars).to.be.an('array');",
+							"    pm.expect(firstFoo.bars[0].foo.bars[0].foo.bars[0].id).to.equal(firstFoo.bars[0].id);",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "content-type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"query\":\"query OneFoo($fooID: Int = 1) {\\n  foos(id: $fooID) {\\n    id\\n    name\\n    bars {\\n      id\\n      value\\n      foo {\\n        bars {\\n          foo {\\n            bars {\\n              id\\n            }\\n          }\\n        }\\n      }\\n    }\\n  }\\n}\\n\",\"variables\":{\"fooID\":1},\"operationName\":\"OneFoo\"}"
+				},
+				"url": {
+					"raw": "http://localhost:8000/graphql",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"graphql"
+					]
+				},
+				"description": "Generated from a curl request: \ncurl --request POST \\\n  --url http://localhost:8000/graphql \\\n  --header 'content-type: application/json' \\\n  --data '{\\\"query\\\":\\\"query OneFoo($fooID: Int = 1) {\\n  foos(id: $fooID) {\\n    id\\n    name\\n    bars {\\n      id\\n      value\\n      foo {\\n        bars {\\n          foo {\\n            bars {\\n              id\\n            }\\n          }\\n        }\\n      }\\n    }\\n  }\\n}\\n\\\",\\\"variables\\\":{\\\"fooID\\\":1},\\\"operationName\\\":\\\"OneFoo\\\"}'"
+			},
+			"response": []
+		},
+		{
+			"name": "Load All the Foos",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "34ecb075-1596-4a5e-94a9-d3349672d1e9",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response is OK JSON\", function () {",
+							"    pm.response.to.be.ok;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Foos is an array\", function () {",
+							"    let foos = pm.response.json().data.foos;",
+							"    pm.expect(foos).to.be.an('array');",
+							"    pm.expect(foos.length).to.equal(1);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "content-type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"query\":\"{\\n  foos {\\n    id\\n    name\\n    bars {\\n      id\\n      value\\n    }\\n  }\\n}\\n\"}"
+				},
+				"url": {
+					"raw": "http://localhost:8000/graphql",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"graphql"
+					]
+				},
+				"description": "Generated from a curl request: \ncurl --request POST \\\n  --url http://localhost:8000/graphql \\\n  --header 'content-type: application/json' \\\n  --data '{\\\"query\\\":\\\"{\\n  foos {\\n    id\\n    name\\n    bars {\\n      id\\n      value\\n    }\\n  }\\n}\\n\\\"}'"
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "literally-anything",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "ce333500-a944-4b33-b3a9-505c104ff77b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "591debb0-811f-426b-b1fe-f975725fdbff",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
